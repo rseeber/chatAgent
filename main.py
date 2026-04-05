@@ -76,30 +76,3 @@ if __name__ == "__main__":
     # Spawn the chat window. I've waited until after the initial events are 
     # done to make things easier.
     threading.Thread(target=promptThread).start()
-
-
-"""
-#TODO:
-    # create an Events object, give it an `args` and `satisfied` property.
-    # create a Prompt object, give it an `available` and `data` property.
-    # set methods for how to update these objects from external modules.
-events = [1, 2, 3, 4, 5]
-prompt = ""
-
-# MAIN LOOP
-while True:
-    # Check for satisfied events
-    for e in events:
-        if e.satisfied:
-            threading.Thread(target=chat, args=e.args).start()
-        #   To prevent this loop from consuming too much power, when timing isn't 
-        # actually that crucial.
-        #   Possibly set to a lower number if |events| becomes too large
-        time.sleep(0.1)
-
-    # If there's a new user prompt, handle it
-    if prompt.available:
-        prompt.available = False
-        threading.Thread(target=chat, args=(prompt.data,)).start()
-    time.sleep(0.1)
-"""
