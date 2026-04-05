@@ -74,7 +74,7 @@ def promptThread():
 # as well as calling APIs and creating events.
 def chat(prompt):
     print(f"handling chat() on your input: {prompt}")
-    return "output"
+    return "this is an output", "foo()"
 
 
 if __name__ == "__main__":
@@ -89,7 +89,6 @@ if __name__ == "__main__":
     # triggers when x == 2 (checked every 5 seconds)
     e2 = Event("prompt2", Condition(type="expression", value="x == 2", refresh=5))
     print("[MAIN]: events created...")
-    time.sleep(5)
     print("[MAIN]: assigning x=2....")
     # assign x to 2, which should trigger e2 in the next 5 seconds
     x = 2

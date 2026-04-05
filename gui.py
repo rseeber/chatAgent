@@ -223,7 +223,9 @@ class ChatUI(tk.Tk):
         response = main.handlePrompt(msg)
 
         # Append the response to the chat window
-        self.append_history_system(response)
+        self.append_history_system(response[0])
+        self.append_log(f"[SYSTEM]: `{response[1]}`")
+
 
 
 
