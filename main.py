@@ -1,12 +1,8 @@
 import threading
 import time
 
-# This is the black box that will eventually hold LLM I/O, 
-# as well as calling APIs and creating events.
-def chat(prompt):
-    print(f"handling chat() on your input: {prompt}")
-    return "output"
-
+# Project Modules
+import gui
 
 class Event:
     def __init__(self, prompt, condition):
@@ -15,31 +11,37 @@ class Event:
 
         self.satisfied = False
 
-        threading.Thread(target=self.handleEvent, args=(condition,)).start()
+        threading.Thread(target=self.__handleEvent, args=(condition,)).start()
 
     # threaded function
-    def handleEvent(self, condition):
+    # This function sets up the process to eventually trigger the Event
+    # once the condition is met.
+    def __handleEvent(self, condition):
         if condition.type == "timer":
-            self.wait(condition.value)
+            self.__wait(condition.value)
         
         elif condition.type == "expression":
-            self.testCondition(condition.value, condition.refresh)
+            self.__testCondition(condition.value, condition.refresh)
 
     # threaded function
-    def wait(self, t):
+    # Waits for t seconds, then triggers the Event
+    def __wait(self, t):
         time.sleep(t)
-        self.trigger()
+        self.__trigger()
 
     # threaded function
-    def testCondition(self, expression, refresh):
+    # Tests the expression every `refresh` seconds, triggering 
+    # the Event when the expression returns True
+    def __testCondition(self, expression, refresh):
         while True:
             if eval(expression):
-                self.trigger()
+                self.__trigger()
                 return
             time.sleep(refresh)
 
+    # threaded function
     # call this function when the event is finished
-    def trigger(self):
+    def __trigger(self):
         chat(self.prompt)
 
 # a property of the Event class. Used to determine when the Event should be triggered
@@ -49,6 +51,16 @@ class Condition:
         self.value = value
         self.refresh = refresh
 
+# called from the gui when the user presses 'send'
+def handlePrompt(msg):
+    # load the user prompt history
+        # TODO
+    # load the memories
+        # TODO
+    # append the new prompt, then generate a response
+    return chat(msg)
+
+
 # threaded function
 # the thread that handles user prompts (as opposed to Events created by the agent)
 def promptThread():
@@ -57,8 +69,19 @@ def promptThread():
         prompt = input("> ")
         chat(prompt)
 
+# (Should only be called within a thread!!)
+# This is the black box that will eventually hold LLM I/O, 
+# as well as calling APIs and creating events.
+def chat(prompt):
+    print(f"handling chat() on your input: {prompt}")
+    return "output"
+
 
 if __name__ == "__main__":
+
+    # Start the GUI as a thread
+    #threading.Thread(target=gui.run).start()
+
     x = 1
     # create some events
     # triggers after 7 seconds
@@ -71,8 +94,11 @@ if __name__ == "__main__":
     # assign x to 2, which should trigger e2 in the next 5 seconds
     x = 2
     print("[MAIN]: assigned!")
-    time.sleep(10)
 
     # Spawn the chat window. I've waited until after the initial events are 
     # done to make things easier.
-    threading.Thread(target=promptThread).start()
+    #threading.Thread(target=promptThread).start()
+
+    # Start the GUI in the main thread
+    app = gui.ChatUI()
+    app.mainloop()
